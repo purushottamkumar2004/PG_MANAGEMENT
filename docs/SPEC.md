@@ -6,13 +6,19 @@ Single source of truth. Changes only through `CHANGES.md`.
 
 - **Owner**: owns many buildings. View-only, plus: sets season passwords, unlocks managers, receives notifications.
 - **Manager**: one per building. Does all data entry for that building.
+- **Admin** (our team): onboards owners. Creates owner and manager accounts, sets up buildings, floors, rooms and beds, can switch an owner off. Never enters tenant or payment data.
+
+Platform: one Android app (React Native + Expo) for all three roles; screens depend on the role after login. Many owners share one backend and one database; every query is scoped by owner.
 
 ## 2. Data model (PostgreSQL)
 
-All ids are UUID. Money is integer rupees. Timestamps are stored UTC, business dates computed in Asia/Kolkata.
+10 tables. All ids are UUID. Money is integer rupees. Timestamps are stored UTC, business dates computed in Asia/Kolkata.
+
+### admin
+id, name, phone (unique), password_hash, created_at
 
 ### owner
-id, name, phone (unique), password_hash, created_at
+id, name, phone (unique), password_hash, is_active (bool, default true; false blocks owner and all their managers), created_at
 
 ### building
 id, owner_id -> owner, name, address, photo_url (nullable), created_at
@@ -71,11 +77,13 @@ Owner sets a numeric code (6 digits) per manager. Stored hashed. Wrong entry inc
 Manager: Home (building) -> Floors -> Rooms -> Beds -> Bed detail / Add tenant; Pending tab; Past Tenants search; Collect payment; Checkout; Bed shift.
 Owner: Home (all buildings with photo and occupancy) -> same drill-down read-only; Pending tab with tap-to-call; Notifications; Daily digest; Manager settings (set season password, unlock).
 
+Admin: Owners list -> Add owner -> Add building (name, address, photo) -> Add floors -> Add rooms (2 or 3 beds; beds auto-created) -> Add manager; Switch owner on/off.
+
 Bed colours: green vacant, blue paid, yellow partial, red overdue (current month). Pending (not yet overdue) shows blue-outline.
 
 ## 5. Notifications
 
-Every payment/deposit log row -> owner alert (building, tenant, amount, mode, manager, time). Daily digest per building at 21:00 Asia/Kolkata.
+Every payment/deposit log row -> owner phone notification via Expo push (building, tenant, amount, mode, manager, time). Daily digest per building at 21:00 Asia/Kolkata.
 
 ## 6. Day-5 calls (Phase 4)
 
@@ -83,4 +91,4 @@ On the 5th at 10:00 Asia/Kolkata, every tenant with current month pending/partia
 
 ## 7. Not included
 
-Payment gateway, ID-photo upload, maintenance status, per-bed history table, full Aadhaar storage.
+Payment gateway, ID-photo upload, maintenance status, per-bed history table, full Aadhaar storage, web/desktop version.

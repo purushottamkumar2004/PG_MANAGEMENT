@@ -1,6 +1,6 @@
 # PG Management
 
-B2B app (mobile PWA + web) for PG (paying guest) owners and managers in India.
+B2B Android app (React Native + Expo) for PG (paying guest) owners and managers in India.
 Managers handle check-in, check-out and rent collection. Owners view and track.
 
 **Core principle: extreme simplicity.** Icons over text, one level per screen, usable by a manager with little tech literacy.
@@ -8,8 +8,8 @@ Managers handle check-in, check-out and rent collection. Owners view and track.
 ## Repo layout
 
 ```
-backend/    Node.js + Express API, Prisma (PostgreSQL), Jest tests
-frontend/   React + Vite PWA (manager and owner screens), Vitest tests
+backend/    Node.js + Express API, Drizzle ORM (PostgreSQL), Vitest tests
+mobile/     React Native + Expo app (admin, owner, manager screens), Jest tests
 docs/       SPEC, PLAN, TASK_BOARD, DECISIONS, CHANGES, API_CONTRACT
 CLAUDE.md   Locked rules every contributor (human or Claude) follows
 ```

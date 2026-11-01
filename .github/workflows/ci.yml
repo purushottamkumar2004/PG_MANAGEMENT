@@ -33,17 +33,16 @@ jobs:
           npm ci
           npm test
 
-  frontend:
+  mobile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Test and build frontend
+      - name: Test mobile app
         run: |
-          if [ ! -f frontend/package.json ]; then echo "No frontend yet, skipping"; exit 0; fi
-          cd frontend
+          if [ ! -f mobile/package.json ]; then echo "No mobile app yet, skipping"; exit 0; fi
+          cd mobile
           npm ci
           npm test
-          npm run build

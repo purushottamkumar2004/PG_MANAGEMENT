@@ -6,7 +6,7 @@ Read `docs/SPEC.md`, `docs/DECISIONS.md` and `docs/TASK_BOARD.md` before any wor
 ## Locked rules
 
 1. Simplicity first. Icons over text, one level per screen, minimal fields.
-2. Only the Manager does data entry. The Owner is view-only plus notifications, except: the Owner sets the season password and unlocks a locked manager.
+2. Only the Manager does tenant and payment data entry. The Owner is view-only plus notifications, except: the Owner sets the season password and unlocks a locked manager. The Admin (our team) only onboards owners and sets up building structure.
 3. Hierarchy: Owner > Building > Floor > Room > Bed > Tenant. Icon drill-down, one level per screen.
 4. Check-in, check-out, payment completion and bed shift require the manager's season password. 3 wrong tries lock the manager until the Owner unlocks.
 5. Rent is due on the 5th of every month for every tenant. The first month's amount is entered manually at check-in.
@@ -16,7 +16,9 @@ Read `docs/SPEC.md`, `docs/DECISIONS.md` and `docs/TASK_BOARD.md` before any wor
 9. Checkout archives the tenant (soft delete). Archived tenants never appear in the live bed view, only in Past Tenants search.
 10. Aadhaar: store last 4 digits only. Never store the full number.
 11. No payment gateway. No ID-photo upload. No maintenance status. No per-bed history table.
-12. Do not add tables, fields, screens or libraries not in the spec without an approved Change Request.
+12. Mobile only: one React Native (Expo) Android app for all roles. No web/desktop UI.
+13. Multi-owner: every query is scoped by owner (and by building for managers). One owner must never see another owner's data.
+14. Do not add tables, fields, screens or libraries not in the spec without an approved Change Request.
 
 ## Code standards
 
