@@ -10,7 +10,7 @@ Node.js + Express + Drizzle ORM + PostgreSQL 16.
    createdb pg_dev
    createdb pg_test
    ```
-3. `cp .env.example .env` and set both URLs.
+3. `cp .env.example .env` and set both URLs and `JWT_SECRET` (the API refuses to start without it).
 4. `npm install`
 5. `npm run db:reset` — wipes pg_dev, applies migrations, loads sample data.
 
@@ -18,6 +18,8 @@ Node.js + Express + Drizzle ORM + PostgreSQL 16.
 
 | Command | What it does |
 |---|---|
+| `npm start` | Starts the API on `PORT` (default 4000) |
+| `npm run dev` | Same, restarting on file changes |
 | `npm test` | Runs all tests against `TEST_DATABASE_URL` (wipes that DB) |
 | `npm run db:reset` | Fresh dev database with sample data |
 | `npm run db:migrate` | Applies new migrations only |
@@ -45,3 +47,10 @@ Even if API code has a bug, Postgres rejects:
 - money entries without cash/upi, or payment entries without a rent month
 - data linking one owner's building to another owner's tenant or manager
 - room capacity other than 2 or 3, bad phone numbers, more than 4 Aadhaar digits
+
+## API layout
+
+- `src/app.js` builds the Express app (no `listen`), `src/server.js` starts it.
+- `src/middleware/auth.js`: `requireAuth` (re-reads the user from the DB on every request; inactive owners and their managers get 403 `ACCOUNT_INACTIVE`) and `requireRole(...roles)`. Sets `req.user = { id, role, owner_id, building_id }`.
+- `src/lib/scope.js`: `assertBuildingAccess(user, buildingId)` — use in every building-scoped endpoint. Returns 404 `NOT_FOUND` for other owners' or other buildings' ids.
+- Throw `AppError` (see `src/lib/errors.js`); the central handler turns it into `{ error: { code, message } }`.
