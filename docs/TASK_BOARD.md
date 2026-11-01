@@ -3,7 +3,7 @@
 | ID | Title | Status | Depends on | Notes |
 |---|---|---|---|---|
 | T-01 | Repo setup, docs, rules, CI | Done | none | Bootstrap commit on main |
-| T-02 | Database schema, migrations, seed data | To do | T-01 | Drizzle + PostgreSQL; 10 tables incl. admin; partial unique index for one active tenant per bed; append-only guard on transaction_log |
+| T-02 | Database schema, migrations, seed data | In review | T-01 | Drizzle + PostgreSQL; 10 tables incl. admin; partial unique index for one active tenant per bed; append-only guard on transaction_log |
 | T-03 | Login, roles, owner and building scoping | To do | T-02 | JWT; admin / owner / manager; inactive owner blocked; cross-owner isolation tests |
 | T-03b | Admin setup: owners, buildings, floors, rooms, beds, managers | To do | T-03 | D-16 |
 | T-04 | Read APIs: buildings, floors, rooms, beds with occupancy and bed colours | To do | T-03 | API Contract v1 published first |
