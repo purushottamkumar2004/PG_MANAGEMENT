@@ -52,3 +52,8 @@ Errors: 401 `UNAUTHORIZED` (missing, bad or expired token, or user no longer exi
 
 ### POST /api/auth/logout
 200: `{ "ok": true }`. Stateless: the app deletes its stored token. (Server-side revocation is out of scope for v1.)
+Needs a valid token like every other endpoint (401/403 otherwise). The app deletes its token and returns to Login whatever the response is.
+
+### Notes (D-20)
+- A locked manager (`is_locked`, D-01) can still log in and view; the lock only blocks season-password actions (T-06).
+- Admin can access buildings of inactive owners (needed to manage or reactivate them).
