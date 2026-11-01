@@ -3,11 +3,12 @@
 | ID | Title | Status | Depends on | Notes |
 |---|---|---|---|---|
 | T-01 | Repo setup, docs, rules, CI | Done | none | Bootstrap commit on main |
-| T-02 | Database schema, migrations, seed data | In review | T-01 | Drizzle + PostgreSQL; 10 tables incl. admin; partial unique index for one active tenant per bed; append-only guard on transaction_log |
-| T-03 | Login, roles, owner and building scoping | To do | T-02 | JWT; admin / owner / manager; inactive owner blocked; cross-owner isolation tests |
+| T-02 | Database schema, migrations, seed data | Done | T-01 | Drizzle + PostgreSQL; 10 tables incl. admin; partial unique index for one active tenant per bed; append-only guard on transaction_log |
+| T-03 | Login, roles, owner and building scoping | Ready | T-02 | JWT; admin / owner / manager; inactive owner blocked; cross-owner isolation tests |
 | T-03b | Admin setup: owners, buildings, floors, rooms, beds, managers | To do | T-03 | D-16 |
 | T-04 | Read APIs: buildings, floors, rooms, beds with occupancy and bed colours | To do | T-03 | API Contract v1 published first |
-| T-05 | Expo app shell + icon drill-down (read-only) | To do | T-04 | Login, building photos, colour-coded beds; test via Expo Go |
+| T-05a | Mobile shell: login, role homes, icon components | To do | none | docs/tasks/T-05a-mobile-shell.md |
+| T-05b | Icon drill-down wired to T-04 APIs | To do | T-04, T-05a | |
 | T-06 | Season password: set (owner), verify, 3-try lock, owner unlock | To do | T-03 | D-01, D-10 |
 | T-07 | Check-in API + UI with password gate | To do | T-04, T-06 | D-04, D-05 |
 | T-08 | Monthly PAYMENT rows + payment marking (partial/paid) | To do | T-07 | Cron on 1st (Asia/Kolkata); D-03 |
