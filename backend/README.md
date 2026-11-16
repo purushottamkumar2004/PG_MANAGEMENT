@@ -54,3 +54,5 @@ Even if API code has a bug, Postgres rejects:
 - `src/middleware/auth.js`: `requireAuth` (re-reads the user from the DB on every request; inactive owners and their managers get 403 `ACCOUNT_INACTIVE`) and `requireRole(...roles)`. Sets `req.user = { id, role, owner_id, building_id }`.
 - `src/lib/scope.js`: `assertBuildingAccess(user, buildingId)` — use in every building-scoped endpoint. Returns 404 `NOT_FOUND` for other owners' or other buildings' ids.
 - Throw `AppError` (see `src/lib/errors.js`); the central handler turns it into `{ error: { code, message } }`.
+- `src/routes/admin.js`: admin setup API (`/api/admin`, role `admin` only). Phones are checked unique across admin, owner and manager inside the insert/update transaction (advisory lock on the phone); DB unique violations map to the contract's 409 codes as a fallback.
+- `src/lib/natural-sort.js`: `naturalCompare` for room numbers ("2" before "10").

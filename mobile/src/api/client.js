@@ -93,3 +93,14 @@ export const authApi = {
   me: () => request('/api/auth/me'),
   logout: () => request('/api/auth/logout', { method: 'POST' }),
 };
+
+// Structure read (docs/API_CONTRACT.md "Structure read", T-04). Owner and manager only.
+const id = (value) => encodeURIComponent(String(value));
+
+export const structureApi = {
+  buildings: () => request('/api/buildings'),
+  floors: (buildingId) => request(`/api/buildings/${id(buildingId)}/floors`),
+  rooms: (floorId) => request(`/api/floors/${id(floorId)}/rooms`),
+  beds: (roomId) => request(`/api/rooms/${id(roomId)}/beds`),
+  bed: (bedId) => request(`/api/beds/${id(bedId)}`),
+};

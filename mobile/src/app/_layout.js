@@ -34,6 +34,13 @@ function RootNavigator() {
       <Stack.Protected guard={role === 'manager'}>
         <Stack.Screen name="manager/index" />
       </Stack.Protected>
+      {/* Drill-down (T-05b), shared by owner and manager. The server scopes the data. */}
+      <Stack.Protected guard={role === 'owner' || role === 'manager'}>
+        <Stack.Screen name="building/[buildingId]" />
+        <Stack.Screen name="floor/[floorId]" />
+        <Stack.Screen name="room/[roomId]" />
+        <Stack.Screen name="bed/[bedId]" />
+      </Stack.Protected>
       <Stack.Protected guard={__DEV__}>
         <Stack.Screen name="dev-components" options={{ headerShown: true, title: 'Components (dev)' }} />
       </Stack.Protected>

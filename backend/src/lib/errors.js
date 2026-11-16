@@ -13,3 +13,4 @@ export const invalidCredentials = () => new AppError(401, 'INVALID_CREDENTIALS',
 export const forbidden = (message = 'Not allowed for your role') => new AppError(403, 'FORBIDDEN', message);
 export const accountInactive = () => new AppError(403, 'ACCOUNT_INACTIVE', 'This account is switched off');
 export const notFound = (message = 'Not found') => new AppError(404, 'NOT_FOUND', message);
+export const conflict = (code = 'CONFLICT', message = 'Already exists') => new AppError(409, code, message);
