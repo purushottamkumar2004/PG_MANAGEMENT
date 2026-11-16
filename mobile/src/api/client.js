@@ -77,9 +77,12 @@ export async function request(path, { method = 'GET', body, auth = true } = {}) 
     'INTERNAL';
   const message = (contractError && contractError.message) || `HTTP ${response.status}`;
 
-  // A 401 on an authenticated call means the stored token is no longer good.
-  // (A 401 from /auth/login is just a wrong password and must not log anyone out.)
-  if (response.status === 401 && token) onUnauthorized();
+  // D-21: a 401, or a 403 ACCOUNT_INACTIVE, on an authenticated call clears the
+  // session and returns to Login. (A 401 from /auth/login is just a wrong password
+  // and must not log anyone out; a network error never reaches this point.)
+  if (token && (response.status === 401 || (response.status === 403 && code === 'ACCOUNT_INACTIVE'))) {
+    onUnauthorized();
+  }
 
   throw new ApiError(code, message, response.status);
 }

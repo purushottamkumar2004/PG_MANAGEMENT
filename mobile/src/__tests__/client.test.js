@@ -53,6 +53,27 @@ describe('api client', () => {
     expect(onUnauthorized).toHaveBeenCalledTimes(1);
   });
 
+  test('403 ACCOUNT_INACTIVE on an authenticated call clears the session (D-21)', async () => {
+    token = 'abc';
+    mockFetch([['GET', '/api/auth/me', 403, contractError('ACCOUNT_INACTIVE')]]);
+    const err = await authApi.me().catch((e) => e);
+    expect(err.code).toBe('ACCOUNT_INACTIVE');
+    expect(onUnauthorized).toHaveBeenCalledTimes(1);
+  });
+
+  test('403 FORBIDDEN (wrong role) does NOT clear the session', async () => {
+    token = 'abc';
+    mockFetch([['GET', '/api/x', 403, contractError('FORBIDDEN')]]);
+    expect((await request('/api/x').catch((e) => e)).code).toBe('FORBIDDEN');
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
+  test('403 ACCOUNT_INACTIVE on login does NOT call onUnauthorized (no session yet)', async () => {
+    mockFetch([['POST', '/api/auth/login', 403, contractError('ACCOUNT_INACTIVE')]]);
+    await authApi.login('9000000001', 'x').catch(() => {});
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
   test('network failure becomes NETWORK_ERROR', async () => {
     mockFetch([['GET', '/api/health', 'NETWORK']]);
     const err = await request('/api/health', { auth: false }).catch((e) => e);

@@ -43,9 +43,9 @@ export function SessionProvider({ children }) {
       tokenRef.current = stored.token;
       setState({ status: 'ready', token: stored.token, user: stored.user });
 
-      // Refresh the user in the background. A 401 is handled by the client
-      // (onUnauthorized). A switched-off account is logged out too.
-      // Network errors keep the stored session so the app still opens offline.
+      // Refresh the user in the background. 401 and ACCOUNT_INACTIVE are handled
+      // by the client (onUnauthorized, D-21). Network errors keep the stored
+      // session so the app still opens offline.
       try {
         const res = await authApi.me();
         if (cancelled || !res || !res.user || tokenRef.current !== stored.token) return;
@@ -55,8 +55,8 @@ export function SessionProvider({ children }) {
         }
         await saveSession({ token: stored.token, user: res.user });
         setState((s) => (s.token === stored.token ? { ...s, user: res.user } : s));
-      } catch (err) {
-        if (!cancelled && err && err.code === 'ACCOUNT_INACTIVE') await signOutLocal();
+      } catch {
+        // Handled above or offline: nothing to do.
       }
     })();
     return () => {
