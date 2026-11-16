@@ -26,7 +26,7 @@ function RootNavigator() {
         <Stack.Screen name="login" />
       </Stack.Protected>
       <Stack.Protected guard={role === 'admin'}>
-        <Stack.Screen name="admin/index" />
+        <Stack.Screen name="admin" />
       </Stack.Protected>
       <Stack.Protected guard={role === 'owner'}>
         <Stack.Screen name="owner/index" />

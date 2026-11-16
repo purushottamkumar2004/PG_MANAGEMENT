@@ -44,6 +44,14 @@ Owner `9000000001` / `owner123`. Each role lands on its own home screen. Logout 
 the server) returns to Login. The session is kept in the phone's secure storage, so the app
 reopens logged in.
 
+## Admin setup (T-05c)
+
+Log in as the Admin (`9000000000` / `admin123` after `npm run db:reset` in `backend/`) to onboard an owner:
+Owners → **+ Owner** → owner screen (on/off switch, asks first) → **+ Building** → building screen
+(edit name/address/photo link, manager card with add/edit/on-off, floors) → **+ Floor** → tap a floor →
+**+ Room** (pick 2 beds or 3 beds; the backend creates beds A/B/C). Owners and managers can never open
+these screens (`src/app/admin/` is guarded by role in `src/app/_layout.js`).
+
 ## Components screen (developers only)
 
 In development builds the Login screen has a small "Components (dev only)" link that shows every

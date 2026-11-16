@@ -109,12 +109,18 @@ describe('role routing', () => {
   });
 
   // Owner and manager homes are the drill-down screens since T-05b (see drilldown.test.js).
-  test('admin home is a placeholder: name and Logout only', async () => {
+  test('admin home is the owners list (T-05c): greeting, + Owner and Logout', async () => {
     await storeSession(users.admin);
-    mockFetch([['GET', '/api/auth/me', 200, { user: users.admin }]]);
+    mockFetch([
+      ['GET', '/api/auth/me', 200, { user: users.admin }],
+      ['GET', '/api/admin/owners', 200, { owners: [] }],
+    ]);
     await renderApp();
     await screen.findByTestId('home-admin');
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(await screen.findByTestId('owners-empty')).toBeOnTheScreen();
+    expect(screen.getByTestId('home-greeting')).toHaveTextContent('Hello, Asha Admin');
+    expect(screen.getAllByRole('button')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: /Owner/ })).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /Logout/ })).toBeOnTheScreen();
   });
 });
