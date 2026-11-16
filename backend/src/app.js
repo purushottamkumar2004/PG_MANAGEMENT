@@ -5,6 +5,8 @@ import cors from 'cors';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { structureRouter } from './routes/structure.js';
+import { ownerRouter } from './routes/owner.js';
+import { managerRouter } from './routes/manager.js';
 import { notFoundRoute, errorHandler } from './middleware/errors.js';
 
 export const app = express();
@@ -16,6 +18,8 @@ app.use(express.json({ limit: '100kb' }));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/owner', ownerRouter);
+app.use('/api/manager', managerRouter);
 app.use('/api', structureRouter);
 
 app.use(notFoundRoute);
