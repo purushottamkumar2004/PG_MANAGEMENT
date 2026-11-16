@@ -57,6 +57,7 @@ Needs a valid token like every other endpoint (401/403 otherwise). The app delet
 ### Notes (D-20)
 - A locked manager (`is_locked`, D-01) can still log in and view; the lock only blocks season-password actions (T-06).
 - Admin can access buildings of inactive owners (needed to manage or reactivate them).
+- App behaviour (D-21): any 401 `UNAUTHORIZED` or 403 `ACCOUNT_INACTIVE` on an authenticated call clears the stored session and returns to Login. A network error keeps the session (the app still opens offline). A 401 from `/auth/login` is just a wrong password.
 
 ## Admin setup (v1, T-03b)
 
