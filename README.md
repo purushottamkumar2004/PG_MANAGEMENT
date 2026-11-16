@@ -22,4 +22,4 @@ CLAUDE.md   Locked rules every contributor (human or Claude) follows
 4. Product owner tests using the steps in the PR, then merges.
 5. `docs/TASK_BOARD.md` is updated with each merged task.
 
-Start with `docs/PLAN.md`, then `docs/SPEC.md`.
+Start with `docs/PLAN.md`, then `docs/SPEC.md`. To run and test the app yourself: `docs/SETUP_AND_TESTING.md`.

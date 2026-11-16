@@ -15,7 +15,7 @@ One React Native (Expo SDK 58) Android app for Admin, Owner and Manager. JavaScr
    cp .env.example .env
    ```
    ```
-   EXPO_PUBLIC_API_URL=http://192.168.1.20:3000
+   EXPO_PUBLIC_API_URL=http://192.168.1.20:4000
    ```
    Use the port your backend prints when it starts. No `/api` at the end, and never `localhost`
    (on the phone, `localhost` means the phone itself).
