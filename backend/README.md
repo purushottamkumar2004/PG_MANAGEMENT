@@ -54,3 +54,6 @@ Even if API code has a bug, Postgres rejects:
 - `src/middleware/auth.js`: `requireAuth` (re-reads the user from the DB on every request; inactive owners and their managers get 403 `ACCOUNT_INACTIVE`) and `requireRole(...roles)`. Sets `req.user = { id, role, owner_id, building_id }`.
 - `src/lib/scope.js`: `assertBuildingAccess(user, buildingId)` — use in every building-scoped endpoint. Returns 404 `NOT_FOUND` for other owners' or other buildings' ids.
 - Throw `AppError` (see `src/lib/errors.js`); the central handler turns it into `{ error: { code, message } }`.
+- `src/lib/seasonCode.js`: `verifySeasonCode(managerId, code)` — call it before every gated action (check-in, payment, check-out, bed shift) and before the action's own transaction. It locks the manager row, counts wrong tries (3 → locked) and throws the contract errors (`VALIDATION_ERROR`, `SEASON_CODE_NOT_SET`, `SEASON_CODE_WRONG` + `attempts_left`, `MANAGER_LOCKED`). Resolves on success.
+- `AppError(status, code, message, extra)`: `extra` fields (e.g. `{ attempts_left: 1 }`) are added to the error body next to `code` and `message`.
+- `src/routes/owner.js` (`/api/owner`): manager list, set season code, unlock. `src/routes/manager.js` (`/api/manager`): `GET /status`.

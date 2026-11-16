@@ -9,7 +9,8 @@ export function notFoundRoute(_req, _res, next) {
 // eslint-disable-next-line no-unused-vars
 export function errorHandler(err, _req, res, _next) {
   if (err instanceof AppError) {
-    return res.status(err.status).json({ error: { code: err.code, message: err.message } });
+    // Extra fields come first so they can never overwrite code or message.
+    return res.status(err.status).json({ error: { ...err.extra, code: err.code, message: err.message } });
   }
   // Body parser errors (bad JSON, too large, wrong charset) are client input problems.
   if (err?.type && typeof err.status === 'number' && err.status >= 400 && err.status < 500) {
