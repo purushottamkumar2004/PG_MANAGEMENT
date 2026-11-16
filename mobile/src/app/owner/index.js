@@ -1,5 +1,6 @@
-import HomeScreen from '../../screens/HomeScreen';
+import BuildingsScreen from '../../screens/drill/BuildingsScreen';
 
+// Owner home: all buildings (T-05b).
 export default function OwnerHome() {
-  return <HomeScreen roleKey="home.owner" testID="home-owner" />;
+  return <BuildingsScreen />;
 }
