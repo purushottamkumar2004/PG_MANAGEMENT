@@ -84,7 +84,11 @@ describe('role routing', () => {
     ['owner', '/owner', 'Ramesh Patil'],
     ['manager', '/manager', 'Suresh Kale'],
   ])('%s logs in and lands on its own home', async (role, path, name) => {
-    mockFetch([['POST', '/api/auth/login', 200, { token: `tok-${role}`, user: users[role] }]]);
+    mockFetch([
+      ['POST', '/api/auth/login', 200, { token: `tok-${role}`, user: users[role] }],
+      ['GET', '/api/buildings', 200, { buildings: [] }],
+      ['GET', '/api/buildings/b1/floors', 200, { building: { id: 'b1', name: 'Sai Residency' }, floors: [] }],
+    ]);
     await renderApp();
     await screen.findByTestId('login-button');
     await fillAndLogin('9000000001', 'secret');
@@ -104,11 +108,12 @@ describe('role routing', () => {
     expect(screen.queryByTestId('home-owner')).not.toBeOnTheScreen();
   });
 
-  test('home screens are placeholders: name and Logout only', async () => {
-    await storeSession(users.owner);
-    mockFetch([['GET', '/api/auth/me', 200, { user: users.owner }]]);
+  // Owner and manager homes are the drill-down screens since T-05b (see drilldown.test.js).
+  test('admin home is a placeholder: name and Logout only', async () => {
+    await storeSession(users.admin);
+    mockFetch([['GET', '/api/auth/me', 200, { user: users.admin }]]);
     await renderApp();
-    await screen.findByTestId('home-owner');
+    await screen.findByTestId('home-admin');
     expect(screen.getAllByRole('button')).toHaveLength(1);
     expect(screen.getByRole('button', { name: /Logout/ })).toBeOnTheScreen();
   });
