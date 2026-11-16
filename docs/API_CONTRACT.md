@@ -143,3 +143,33 @@ or, when occupied, `tenant`:
                      "payment_status": "partial", "payment_date": "2026-11-02" } }
 ```
 `current_month` is null if the row does not exist yet. `age` and `aadhaar_last4` may be null. The app shows Aadhaar masked as `XXXX-XXXX-1234`. Owners see the same data read-only (D-02).
+
+## Season password (v1, T-06)
+
+A 6-digit numeric code per manager, set only by the owner (D-10), stored as a bcrypt hash.
+Gated actions (check-in, payment, check-out, bed shift: T-07 onward) send it in the request body as `"season_code": "993560"`.
+
+### Owner endpoints (role `owner`; manager must belong to one of the owner's buildings, else 404)
+- `GET /api/owner/managers` → 200 `{ "managers": [ { "id", "name", "phone", "building_id", "building_name", "is_active", "has_season_code", "code_updated_at", "is_locked", "failed_attempts" } ] }` sorted by building name
+- `PUT /api/owner/managers/:managerId/season-code` `{ "code": "993560" }` → 200 `{ "manager": { same shape } }`
+  - `code`: exactly 6 digits, not all the same digit (`111111`), not `123456` or `654321` → else 400 `VALIDATION_ERROR`
+  - Sets a new hash and `code_updated_at = now`, and also resets `failed_attempts = 0`, `is_locked = false`
+- `POST /api/owner/managers/:managerId/unlock` → 200 `{ "manager": { same shape } }`: resets `failed_attempts = 0`, `is_locked = false`, keeps the code
+
+### Manager endpoint (role `manager`)
+- `GET /api/manager/status` → 200 `{ "has_season_code": true, "is_locked": false, "attempts_left": 3 }` so the app can show a clear message before the manager fills a form
+
+### Verification rule (used by every gated action)
+Checked before the action, in its own transaction with the manager row locked (`SELECT ... FOR UPDATE`), so a failed attempt is counted even though the action is not done, and two parallel requests cannot both slip past the limit.
+
+| Situation | Response |
+|---|---|
+| `season_code` missing or not 6 digits | 400 `VALIDATION_ERROR` (does not count as an attempt) |
+| owner never set a code | 409 `SEASON_CODE_NOT_SET` |
+| manager already locked | 423 `MANAGER_LOCKED` (does not count) |
+| wrong code, attempts 1 or 2 | 403 `SEASON_CODE_WRONG`, body adds `"attempts_left": 2` or `1` |
+| wrong code, 3rd attempt | manager becomes locked; 423 `MANAGER_LOCKED`, `"attempts_left": 0` |
+| correct code | `failed_attempts` reset to 0, action continues |
+
+Error body example: `{ "error": { "code": "SEASON_CODE_WRONG", "message": "Wrong season password", "attempts_left": 1 } }`
+Locked managers can still log in and view everything (D-20); only gated actions stop.
