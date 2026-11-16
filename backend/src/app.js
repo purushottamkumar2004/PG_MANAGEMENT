@@ -3,6 +3,7 @@ import './config.js'; // throws if JWT_SECRET is missing
 import express from 'express';
 import cors from 'cors';
 import { authRouter } from './routes/auth.js';
+import { structureRouter } from './routes/structure.js';
 import { notFoundRoute, errorHandler } from './middleware/errors.js';
 
 export const app = express();
@@ -13,6 +14,7 @@ app.use(express.json({ limit: '100kb' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
+app.use('/api', structureRouter);
 
 app.use(notFoundRoute);
 app.use(errorHandler);
