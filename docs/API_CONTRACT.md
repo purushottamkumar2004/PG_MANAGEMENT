@@ -69,7 +69,7 @@ No structure deletes in v1 (only add, and switch owners/managers on or off).
 ### Owners
 - `GET /api/admin/owners` → 200 `{ "owners": [ { "id", "name", "phone", "is_active", "building_count" } ] }` (sorted by name)
 - `POST /api/admin/owners` `{ "name", "phone", "password" }` → 201 `{ "owner": { "id", "name", "phone", "is_active" } }`
-- `PATCH /api/admin/owners/:ownerId` `{ "is_active"?: bool, "name"?: string, "password"?: string }` → 200 `{ "owner": {...} }`
+- `PATCH /api/admin/owners/:ownerId` `{ "is_active"?: bool, "name"?: string, "phone"?: string, "password"?: string }` → 200 `{ "owner": {...} }` · `phone` added by T-03d; 409 `PHONE_TAKEN` as for create
 
 ### Buildings and structure
 - `GET /api/admin/owners/:ownerId/buildings` → 200
@@ -90,6 +90,7 @@ No structure deletes in v1 (only add, and switch owners/managers on or off).
 ### Managers
 - `POST /api/admin/buildings/:buildingId/manager` `{ "name", "phone", "password" }` → 201 `{ "manager": { "id", "building_id", "name", "phone", "is_active", "has_season_code": false } }` · 409 `MANAGER_EXISTS` if the building already has one
 - `PATCH /api/admin/managers/:managerId` `{ "name"?, "phone"?, "password"?, "is_active"? }` → 200 `{ "manager": {...} }` · used when a manager is replaced (v1 keeps one manager row per building)
+  - A **phone change means a new person** (D-22, T-03d): the season code is cleared (`has_season_code: false`), `failed_attempts = 0`, `is_locked = false`. The owner must set a new code.
 - A new manager has no season code until the owner sets one (T-06), so gated actions stay blocked until then.
 
 Unknown or malformed ids → 404 `NOT_FOUND`.
@@ -119,12 +120,12 @@ Counts: `total_beds` = beds; `occupied_beds` = beds with an active tenant; `free
 200 `{ "building": { "id", "name" }, "floors": [ { "id", "floor_number", "total_beds", "free_beds" } ] }` sorted by floor_number.
 
 ### GET /api/floors/:floorId/rooms
-200 `{ "floor": { "id", "floor_number", "building_id" }, "rooms": [ { "id", "room_number", "bed_capacity", "free_beds" } ] }` sorted naturally by room_number.
+200 `{ "floor": { "id", "floor_number", "building_id", "building_name" }, "rooms": [ { "id", "room_number", "bed_capacity", "free_beds" } ] }` sorted naturally by room_number.
 
 ### GET /api/rooms/:roomId/beds
 200
 ```json
-{ "room": { "id", "room_number", "bed_capacity", "floor_id", "floor_number", "building_id" },
+{ "room": { "id", "room_number", "bed_capacity", "floor_id", "floor_number", "building_id", "building_name" },
   "beds": [ { "id": "uuid", "bed_label": "A", "status": "partial",
               "tenant": { "id": "uuid", "name": "Rahul Verma" } } ] }
 ```
@@ -173,3 +174,6 @@ Checked before the action, in its own transaction with the manager row locked (`
 
 Error body example: `{ "error": { "code": "SEASON_CODE_WRONG", "message": "Wrong season password", "attempts_left": 1 } }`
 Locked managers can still log in and view everything (D-20); only gated actions stop.
+The app treats every 423 `MANAGER_LOCKED` the same way ("Locked, ask the owner to unlock"); `attempts_left` is only present on the 3rd wrong try (D-22).
+
+`building_name` in the rooms and beds responses is added by T-03d (C-05).
