@@ -56,3 +56,6 @@ Even if API code has a bug, Postgres rejects:
 - Throw `AppError` (see `src/lib/errors.js`); the central handler turns it into `{ error: { code, message } }`.
 - `src/routes/admin.js`: admin setup API (`/api/admin`, role `admin` only). Phones are checked unique across admin, owner and manager inside the insert/update transaction (advisory lock on the phone); DB unique violations map to the contract's 409 codes as a fallback.
 - `src/lib/natural-sort.js`: `naturalCompare` for room numbers ("2" before "10").
+- `src/lib/seasonCode.js`: `verifySeasonCode(managerId, code)` — call it before every gated action (check-in, payment, check-out, bed shift) and before the action's own transaction. It locks the manager row, counts wrong tries (3 → locked) and throws the contract errors (`VALIDATION_ERROR`, `SEASON_CODE_NOT_SET`, `SEASON_CODE_WRONG` + `attempts_left`, `MANAGER_LOCKED`). Resolves on success.
+- `AppError(status, code, message, extra)`: `extra` fields (e.g. `{ attempts_left: 1 }`) are added to the error body next to `code` and `message`.
+- `src/routes/owner.js` (`/api/owner`): manager list, set season code, unlock. `src/routes/manager.js` (`/api/manager`): `GET /status`.
